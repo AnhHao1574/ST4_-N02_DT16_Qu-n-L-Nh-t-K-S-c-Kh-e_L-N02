@@ -1,3 +1,8 @@
+# bấm tải xuống như hình dưới nha 
+<img width="1566" height="599" alt="image" src="https://github.com/user-attachments/assets/7d3e74bf-3c85-428b-a83b-37811522884c" />
+
+
+
 # Khi tải về mấy ông chạy thử luôn khỏi cần phải lấy link tìm sqlite , tui có hàm tự tìm kiếm link và chạy code luôn 
 # chạy chương trình dùng lệnh :        python -m main 
 dưới đây là giao diện và vị trí hàm sử dụng 
