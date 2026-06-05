@@ -128,17 +128,33 @@ class Ui_Dialog(object):
         font.setPointSize(10)
         self.lineEdit_nhiptim.setFont(font)
         self.lineEdit_nhiptim.setObjectName("lineEdit_nhiptim")
+
+        # --- BỔ SUNG VÀ SẮP XẾP LẠI 4 NÚT BẤM ---
+        font_btn = QtGui.QFont()
+        font_btn.setPointSize(10)
+
+        # Nút Thêm
+        self.btn_them = QtWidgets.QPushButton(self.groupBox)
+        self.btn_them.setGeometry(QtCore.QRect(630, 40, 111, 45))
+        self.btn_them.setFont(font_btn)
+        self.btn_them.setObjectName("btn_them")
+
+        # Nút Sửa
         self.btn_sua = QtWidgets.QPushButton(self.groupBox)
-        self.btn_sua.setGeometry(QtCore.QRect(20, 200, 111, 51))
-        font = QtGui.QFont()
-        font.setPointSize(10)
-        self.btn_sua.setFont(font)
+        self.btn_sua.setGeometry(QtCore.QRect(750, 40, 111, 45))
+        self.btn_sua.setFont(font_btn)
         self.btn_sua.setObjectName("btn_sua")
+
+        # Nút Xóa
+        self.btn_xoa = QtWidgets.QPushButton(self.groupBox)
+        self.btn_xoa.setGeometry(QtCore.QRect(630, 100, 111, 45))
+        self.btn_xoa.setFont(font_btn)
+        self.btn_xoa.setObjectName("btn_xoa")
+
+        # Nút Làm mới
         self.btn_reset = QtWidgets.QPushButton(self.groupBox)
-        self.btn_reset.setGeometry(QtCore.QRect(150, 200, 111, 51))
-        font = QtGui.QFont()
-        font.setPointSize(10)
-        self.btn_reset.setFont(font)
+        self.btn_reset.setGeometry(QtCore.QRect(750, 100, 111, 45))
+        self.btn_reset.setFont(font_btn)
         self.btn_reset.setObjectName("btn_reset")
 
         self.retranslateUi(Dialog)
@@ -173,8 +189,12 @@ class Ui_Dialog(object):
         self.comboBox_gioitinh.setItemText(1, _translate("Dialog", "Nữ"))
         self.label_8.setText(_translate("Dialog", "Huyết áp :"))
         self.label_9.setText(_translate("Dialog", "Nhịp tim: "))
+        
+        # Thiết lập văn bản hiển thị cho 4 nút
+        self.btn_them.setText(_translate("Dialog", "Thêm"))
         self.btn_sua.setText(_translate("Dialog", "Sửa"))
-        self.btn_reset.setText(_translate("Dialog", "Làm mới "))
+        self.btn_xoa.setText(_translate("Dialog", "Xóa"))
+        self.btn_reset.setText(_translate("Dialog", "Làm mới"))
 
 
 if __name__ == "__main__":

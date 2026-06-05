@@ -127,7 +127,7 @@ class HoSoSucKhoeUtils:
             id
         ))
 
-        # Cập nhật thông tin bảng chi_so (Đã bỏ cập nhật trường bmi)
+        # Cập nhật thông tin bảng chi_so 
         cursor.execute("""
             UPDATE chi_so
             SET

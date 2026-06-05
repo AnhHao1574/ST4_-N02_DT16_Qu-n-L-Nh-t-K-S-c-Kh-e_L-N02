@@ -33,7 +33,6 @@ class HoSoSucKhoeScreen(QtWidgets.QWidget, HoSoSucKhoeUtils):
         
         header = self.ui.tableWidget_hososuckhoe.horizontalHeader()
         header.setSectionResizeMode(0, QHeaderView.ResizeToContents)
-        # THAY ĐỔI: Chỉ số cột cuối cùng (Ngày) giờ là 7 thay vì 8
         header.setSectionResizeMode(7, QHeaderView.ResizeToContents)
 
         for i in range(1, self.ui.tableWidget_hososuckhoe.columnCount()):
@@ -41,7 +40,12 @@ class HoSoSucKhoeScreen(QtWidgets.QWidget, HoSoSucKhoeUtils):
                 continue
             header.setSectionResizeMode(i, QHeaderView.Stretch)
         
-
+        # --- KẾT NỐI CÁC NÚT BẤM (ĐÃ MỞ LẠI THÊM VÀ XÓA) ---
+        if hasattr(self.ui, 'btn_them'):
+            self.ui.btn_them.clicked.connect(self.ThemHoSo)
+        if hasattr(self.ui, 'btn_xoa'):
+            self.ui.btn_xoa.clicked.connect(self.XoaHoSo)
+            
         self.ui.btn_sua.clicked.connect(self.SuaHoSo)
         self.ui.btn_reset.clicked.connect(self.ResetForm)
         
@@ -74,14 +78,16 @@ class HoSoSucKhoeScreen(QtWidgets.QWidget, HoSoSucKhoeUtils):
         self.ui.tableWidget_hososuckhoe.setGeometry(margin, table_top, width, table_height)
 
         button_x = max(630, width - 250)
-        for button, y in [
-         
-            (self.ui.btn_sua, 70),
-            (self.ui.btn_reset, 170),
-        ]:
-            button.setGeometry(button_x, y, 120, 51)
+        
+        # Cấu hình lại vị trí hiển thị cho cả 4 nút nếu file UI của bạn có chứa
+        buttons_config = []
+        if hasattr(self.ui, 'btn_them'): buttons_config.append((self.ui.btn_them, 30))
+        buttons_config.append((self.ui.btn_sua, 90))
+        if hasattr(self.ui, 'btn_xoa'): buttons_config.append((self.ui.btn_xoa, 150))
+        buttons_config.append((self.ui.btn_reset, 210))
 
-    # --- THAY ĐỔI: XOÁ BỎ HOÀN TOÀN HÀM TinhBMI ---
+        for button, y in buttons_config:
+            button.setGeometry(button_x, y, 120, 45)
 
     def HienThiDuLieuLenBang(self):
         try:
@@ -93,8 +99,6 @@ class HoSoSucKhoeScreen(QtWidgets.QWidget, HoSoSucKhoeUtils):
                 self.ui.tableWidget_hososuckhoe.insertRow(row_index)
                 self.ui.tableWidget_hososuckhoe.setVerticalHeaderItem(row_index, QtWidgets.QTableWidgetItem(str(row_data[0])))
                 
-                # Cấu trúc row_data từ DB (bỏ ID đầu): [ho_ten, tuoi, gioi_tinh, chieu_cao, can_nang, huyet_ap, nhip_tim, ngay_tao, muc_do]
-                # THAY ĐỔI: Đổ thẳng cấu trúc gốc tuần tự vào 8 cột hiển thị sạch sẽ không chen BMI tính toán vào nữa
                 for col_index, data in enumerate(row_data[1:9]):
                     val = "" if data is None else str(data)
                     item = QtWidgets.QTableWidgetItem(val)
@@ -131,55 +135,52 @@ class HoSoSucKhoeScreen(QtWidgets.QWidget, HoSoSucKhoeUtils):
             self.ui.comboBox_gioitinh.setCurrentText(get_safe_text(row, 2))
             self.ui.lineEdit_chieucao.setText(get_safe_text(row, 3))
             self.ui.lineEdit_cannang.setText(get_safe_text(row, 4))
-            
-            # THAY ĐỔI: Sắp xếp lại chỉ số cột index do loại bỏ BMI (Huyết áp cột 5, Nhịp tim cột 6)
             self.ui.lineEdit_huyetap.setText(get_safe_text(row, 5))
             self.ui.lineEdit_nhiptim.setText(get_safe_text(row, 6))
-            
-    # def ThemHoSo(self):
-    #     ho_ten = self.ui.lineEdit_hoten.text().strip()
-    #     tuoi = self.ui.spinBox_tuoi.value()
-    #     gioi_tinh = self.ui.comboBox_gioitinh.currentText()
+
+    # --- ĐÃ MỞ LẠI HÀM THÊM HỒ SƠ ---
+    def ThemHoSo(self):
+        ho_ten = self.ui.lineEdit_hoten.text().strip()
+        tuoi = self.ui.spinBox_tuoi.value()
+        gioi_tinh = self.ui.comboBox_gioitinh.currentText()
         
-    #     try:
-    #         chieu_cao = float(self.ui.lineEdit_chieucao.text().strip())
-    #         can_nang = float(self.ui.lineEdit_cannang.text().strip())
-    #     except ValueError:
-    #         QtWidgets.QMessageBox.warning(self, "Thông báo", "Chiều cao và Cân nặng phải là số!")
-    #         return
+        try:
+            chieu_cao = float(self.ui.lineEdit_chieucao.text().strip() or 0)
+            can_nang = float(self.ui.lineEdit_cannang.text().strip() or 0)
+        except ValueError:
+            QtWidgets.QMessageBox.warning(self, "Thông báo", "Chiều cao và Cân nặng phải là số!")
+            return
 
-    #     huyet_ap = self.ui.lineEdit_huyetap.text().strip()
-    #     nhip_tim = self.ui.lineEdit_nhiptim.text().strip()
+        huyet_ap = self.ui.lineEdit_huyetap.text().strip()
+        nhip_tim = self.ui.lineEdit_nhiptim.text().strip()
 
-    #     if not ho_ten:
-    #         QtWidgets.QMessageBox.warning(self, "Thông báo", "Vui lòng nhập họ tên!")
-    #         return
+        if not ho_ten:
+            QtWidgets.QMessageBox.warning(self, "Thông báo", "Vui lòng nhập họ tên!")
+            return
 
-    #     # KIỂM TRA & ÉP KIỂU USER_ID AN TOÀN
-    #     if self.user_id is None:
-    #         self.user_id = self.lay_user_id(self.username)
+        if self.user_id is None:
+            self.user_id = self.lay_user_id(self.username)
         
-    #     if self.user_id is None:
-    #         QtWidgets.QMessageBox.critical(self, "Lỗi", "Không tìm thấy User ID hợp lệ trong hệ thống!")
-    #         return
+        if self.user_id is None:
+            QtWidgets.QMessageBox.critical(self, "Lỗi", "Không tìm thấy User ID hợp lệ trong hệ thống!")
+            return
 
-    #     try:
-    #         # Gọi hàm Utils (Đã loại bỏ tham số bmi)
-    #         self.ThemHoSoDB(
-    #             int(self.user_id), # Ép kiểu số nguyên chắc chắn cho SQLite
-    #             ho_ten,
-    #             int(tuoi),
-    #             gioi_tinh,
-    #             chieu_cao,
-    #             can_nang,
-    #             huyet_ap,
-    #             nhip_tim
-    #         )
-    #         QtWidgets.QMessageBox.information(self, "Thành công", "Đã thêm hồ sơ thành công!")
-    #         self.HienThiDuLieuLenBang()
-    #         self.ResetForm()
-    #     except Exception as e:
-    #         QtWidgets.QMessageBox.critical(self, "Lỗi", f"Lỗi khi thực hiện thêm dữ liệu: {e}")
+        try:
+            self.ThemHoSoDB(
+                int(self.user_id),
+                ho_ten,
+                int(tuoi),
+                gioi_tinh,
+                chieu_cao,
+                can_nang,
+                huyet_ap,
+                nhip_tim
+            )
+            QtWidgets.QMessageBox.information(self, "Thành công", "Đã thêm dữ liệu chỉ số mới thành công!")
+            self.HienThiDuLieuLenBang()
+            self.ResetForm()
+        except Exception as e:
+            QtWidgets.QMessageBox.critical(self, "Lỗi", f"Lỗi khi thực hiện thêm dữ liệu: {e}")
 
     def SuaHoSo(self):
         if not self.id_dang_chon:
@@ -191,8 +192,8 @@ class HoSoSucKhoeScreen(QtWidgets.QWidget, HoSoSucKhoeUtils):
         gioi_tinh = self.ui.comboBox_gioitinh.currentText()
 
         try:
-            chieu_cao = float(self.ui.lineEdit_chieucao.text().strip())
-            can_nang = float(self.ui.lineEdit_cannang.text().strip())
+            chieu_cao = float(self.ui.lineEdit_chieucao.text().strip() or 0)
+            can_nang = float(self.ui.lineEdit_cannang.text().strip() or 0)
         except ValueError:
             QtWidgets.QMessageBox.warning(self, "Thông báo", "Chiều cao và Cân nặng phải là số!")
             return
@@ -201,7 +202,6 @@ class HoSoSucKhoeScreen(QtWidgets.QWidget, HoSoSucKhoeUtils):
         nhip_tim = self.ui.lineEdit_nhiptim.text().strip()
 
         try:
-            # Gọi hàm Utils (Đã loại bỏ tham số bmi và ép kiểu id ẩn chắc chắn)
             self.SuaHoSoDB(
                 int(self.id_dang_chon),
                 ho_ten,
@@ -218,22 +218,22 @@ class HoSoSucKhoeScreen(QtWidgets.QWidget, HoSoSucKhoeUtils):
         except Exception as e:
             QtWidgets.QMessageBox.critical(self, "Lỗi", f"Lỗi khi thực hiện sửa dữ liệu: {e}")
 
-    # def XoaHoSo(self):
-    #     if not self.id_dang_chon: 
-    #         QtWidgets.QMessageBox.warning(self, "Thông báo", "Vui lòng chọn dòng cần xóa!")
-    #         return
+    # --- ĐÃ MỞ LẠI HÀM XÓA HỒ SƠ ---
+    def XoaHoSo(self):
+        if not self.id_dang_chon: 
+            QtWidgets.QMessageBox.warning(self, "Thông báo", "Vui lòng chọn dòng cần xóa!")
+            return
             
-    #     msg = QtWidgets.QMessageBox.question(self, "Xác nhận xóa", "Bạn có chắc muốn xóa vĩnh viễn hồ sơ này?", 
-    #                                          QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No)
-    #     if msg == QtWidgets.QMessageBox.Yes:
-    #         try:
-    #             # Sửa lại hàm gọi: Chỉ truyền duy nhất tham số id theo đúng cấu trúc XoaHoSoDB(self, id)
-    #             self.XoaHoSoDB(int(self.id_dang_chon))
-    #             self.HienThiDuLieuLenBang()
-    #             self.ResetForm()
-    #             QtWidgets.QMessageBox.information(self, "Thành công", "Đã xóa hồ sơ thành công!")
-    #         except Exception as e:
-    #             QtWidgets.QMessageBox.critical(self, "Lỗi", f"Gặp lỗi khi xóa bản ghi: {e}")
+        msg = QtWidgets.QMessageBox.question(self, "Xác nhận xóa", "Bạn có chắc muốn xóa vĩnh viễn bản ghi chỉ số này?", 
+                                             QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No)
+        if msg == QtWidgets.QMessageBox.Yes:
+            try:
+                self.XoaHoSoDB(int(self.id_dang_chon))
+                self.HienThiDuLieuLenBang()
+                self.ResetForm()
+                QtWidgets.QMessageBox.information(self, "Thành công", "Đã xóa dữ liệu thành công!")
+            except Exception as e:
+                QtWidgets.QMessageBox.critical(self, "Lỗi", f"Gặp lỗi khi xóa bản ghi: {e}")
     
     def ResetForm(self):
         self.id_dang_chon = None
@@ -241,7 +241,6 @@ class HoSoSucKhoeScreen(QtWidgets.QWidget, HoSoSucKhoeUtils):
         self.ui.spinBox_tuoi.setValue(0)
         self.ui.lineEdit_chieucao.clear()
         self.ui.lineEdit_cannang.clear()
-        # THAY ĐỔI: Đã xóa dòng clear lineEdit_BMI thừa ở đây
         self.ui.lineEdit_huyetap.clear()
         self.ui.lineEdit_nhiptim.clear()
         self.ui.comboBox_gioitinh.setCurrentIndex(0)

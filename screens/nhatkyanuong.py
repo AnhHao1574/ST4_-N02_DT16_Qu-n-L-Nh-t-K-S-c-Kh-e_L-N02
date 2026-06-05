@@ -10,6 +10,7 @@ from styles.nhatkyanuong_style import NHATKYANUONG_STYLE
 class NhatKyAnUongScreen(QtWidgets.QWidget, NhatKyAnUongUtils):
     def __init__(self, username="", role="user"):
         super().__init__()
+
         self.current_user = username
         self.current_role = role
         
@@ -78,9 +79,11 @@ class NhatKyAnUongScreen(QtWidgets.QWidget, NhatKyAnUongUtils):
         except Exception as e:
             print(f"Lỗi tải danh sách hồ sơ: {e}")
 
+
     def resizeEvent(self, event):
         super().resizeEvent(event)
         self.cap_nhat_kich_thuoc_giao_dien()
+
 
     def cap_nhat_kich_thuoc_giao_dien(self):
         margin = 20
@@ -98,21 +101,7 @@ class NhatKyAnUongScreen(QtWidgets.QWidget, NhatKyAnUongUtils):
             table_height
         )
 
-        # Cum thong ke nam ben phai va tu bam theo do rong groupBox.
-        stats_label_x = max(560, width - 430)
-        stats_value_x = stats_label_x + 170
-        stats_width = max(width - stats_value_x - 35, 160)
-
-        self.ui.label_14.move(stats_label_x, 145)
-        self.ui.label_16.move(stats_label_x, 185)
-        self.ui.label_17.move(stats_label_x, 225)
-        self.ui.lineEdit_tongcalo.setGeometry(stats_value_x, 145, stats_width, 31)
-        self.ui.lineEdit_TDEE.setGeometry(stats_value_x, 185, stats_width, 31)
-        self.ui.lineEdit_trangthai.setGeometry(stats_value_x, 225, stats_width, 31)
-
-        note_width = max(stats_label_x - 110, 380)
-        self.ui.lineEdit_ghichu.setGeometry(90, 190, note_width, 31)
-
+        
     def LayDuLieuAnUong(self):
         try:
             rows = self.LayDuLieuAnUongDB() # GĂ¡Â»Â�i phĂ†Â°Ă†Â¡ng thĂ¡Â»Â©c kĂ¡ÂºÂ¿t nĂ¡Â»â€˜i JOIN tĂ¡Â»Â« lĂ¡Â»â€ºp tiĂ¡Â»â€¡n ĂƒÂ­ch
