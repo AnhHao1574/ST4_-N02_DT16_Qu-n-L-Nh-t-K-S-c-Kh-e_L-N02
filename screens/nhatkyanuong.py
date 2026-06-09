@@ -22,17 +22,6 @@ class NhatKyAnUongScreen(QtWidgets.QWidget, NhatKyAnUongUtils):
         self.setStyleSheet(NHATKYANUONG_STYLE)
 
         # 3. Cấu hình bảng dữ liệu
-        if self.layout() is None:
-            self.main_layout = QtWidgets.QVBoxLayout(self)
-        else:
-            self.main_layout = self.layout()
-        
-        self.main_layout.setContentsMargins(15, 40, 15, 15)
-        self.main_layout.setSpacing(10)
-
-        self.main_layout.setStretch(0, 0)
-        self.main_layout.setStretch(1, 1)
-       
         self.ui.tableWidget_nhatkyanuong.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
         self.ui.tableWidget_nhatkyanuong.setHorizontalHeaderLabels([
             "Họ và tên",
@@ -54,12 +43,17 @@ class NhatKyAnUongScreen(QtWidgets.QWidget, NhatKyAnUongUtils):
         self.ui.btn_xoa.clicked.connect(self.XoaNhatKy)
         self.ui.btn_reset.clicked.connect(self.ResetForm)
         self.ui.tableWidget_nhatkyanuong.cellClicked.connect(self.ChonDong)
+        self.ui.comboBox_hoso.currentIndexChanged.connect(self.CapNhatThongKe)
+        self.ui.dateEdit_ngay.dateChanged.connect(self.CapNhatThongKe)
 
         self.LayDuLieuAnUong()
         self.LoadHoSo()
 
+
+
     def LoadHoSo(self):
         try:
+            self.ui.comboBox_hoso.blockSignals(True)
             conn = get_connection()
             cursor = conn.cursor()
             if self.current_role == "admin":
@@ -78,42 +72,32 @@ class NhatKyAnUongScreen(QtWidgets.QWidget, NhatKyAnUongUtils):
             conn.close()
         except Exception as e:
             print(f"Lỗi tải danh sách hồ sơ: {e}")
-
-
-    def resizeEvent(self, event):
-        super().resizeEvent(event)
-        self.cap_nhat_kich_thuoc_giao_dien()
-
-
-    def cap_nhat_kich_thuoc_giao_dien(self):
-        margin = 20
-        group_top = 20
-        group_height = 295
-        width = max(self.width() - margin * 2, 980)
-        table_top = group_top + group_height + 15
-        table_height = max(self.height() - table_top - margin, 240)
-
-        self.ui.groupBox_2.setGeometry(margin, group_top, width, group_height)
-        self.ui.tableWidget_nhatkyanuong.setGeometry(
-            margin,
-            table_top,
-            width,
-            table_height
-        )
+        finally:
+            self.ui.comboBox_hoso.blockSignals(False)
+            self.CapNhatThongKe()
 
         
     def LayDuLieuAnUong(self):
         try:
-            rows = self.LayDuLieuAnUongDB() # GĂ¡Â»Â�i phĂ†Â°Ă†Â¡ng thĂ¡Â»Â©c kĂ¡ÂºÂ¿t nĂ¡Â»â€˜i JOIN tĂ¡Â»Â« lĂ¡Â»â€ºp tiĂ¡Â»â€¡n ĂƒÂ­ch
+            # Tắt tạm thời tính năng sắp xếp khi đang tải dữ liệu để tránh xáo trộn dòng
+            self.ui.tableWidget_nhatkyanuong.setSortingEnabled(False)
+
+            rows = self.LayDuLieuAnUongDB() 
             self.ui.tableWidget_nhatkyanuong.setRowCount(0)
             for row_idx, row_data in enumerate(rows):
                 self.ui.tableWidget_nhatkyanuong.insertRow(row_idx)
                 self.ui.tableWidget_nhatkyanuong.setVerticalHeaderItem(row_idx, QtWidgets.QTableWidgetItem(str(row_data[0])))
-                for col_idx, data in enumerate(row_data[1:]):
+                # row_data[1:8] covers columns 1 to 7 (i.e. ho_ten to ghi_chu)
+                for col_idx, data in enumerate(row_data[1:8]):
                     val = f"{data} kcal" if col_idx == 5 else str("" if data is None else data)
                     item = QtWidgets.QTableWidgetItem(val)
                     item.setFlags(item.flags() & ~QtCore.Qt.ItemIsEditable)
+                    if col_idx == 0:  # Cột Họ và tên
+                        item.setData(QtCore.Qt.UserRole, row_data[8])  # Lưu ho_so_id
                     self.ui.tableWidget_nhatkyanuong.setItem(row_idx, col_idx, item)
+
+            # Bật lại tính năng sắp xếp (click vào tiêu đề cột để sắp xếp tăng/giảm dần)
+            self.ui.tableWidget_nhatkyanuong.setSortingEnabled(True)
         except Exception as e:
             print(f"Lỗi tải nhật ký ăn uống: {e}")
 
@@ -126,13 +110,26 @@ class NhatKyAnUongScreen(QtWidgets.QWidget, NhatKyAnUongUtils):
         self.ui.comboBox_hoso.blockSignals(True)
 
         try:
-            # Tìm và chọn đúng tên hiển thị trong combobox hồ sơ
-            ten_ho_so = self.ui.tableWidget_nhatkyanuong.item(row, 0).text()
-            index = self.ui.comboBox_hoso.findText(ten_ho_so)
-            if index >= 0:
-                self.ui.comboBox_hoso.setCurrentIndex(index)
+            # Lấy ho_so_id từ UserRole của cột Họ tên
+            item_hoten = self.ui.tableWidget_nhatkyanuong.item(row, 0)
+            ho_so_id = item_hoten.data(QtCore.Qt.UserRole) if item_hoten else None
+
+            if ho_so_id is not None:
+                index = self.ui.comboBox_hoso.findData(ho_so_id)
+                if index >= 0:
+                    self.ui.comboBox_hoso.setCurrentIndex(index)
+                else:
+                    # Fallback dùng tìm text nếu không có data
+                    ten_ho_so = item_hoten.text() if item_hoten else ""
+                    idx = self.ui.comboBox_hoso.findText(ten_ho_so)
+                    if idx >= 0:
+                        self.ui.comboBox_hoso.setCurrentIndex(idx)
             else:
-                self.ui.comboBox_hoso.setCurrentText(ten_ho_so)
+                # Fallback dùng tìm text
+                ten_ho_so = self.ui.tableWidget_nhatkyanuong.item(row, 0).text()
+                index = self.ui.comboBox_hoso.findText(ten_ho_so)
+                if index >= 0:
+                    self.ui.comboBox_hoso.setCurrentIndex(index)
 
             self.ui.dateEdit_ngay.setDate(QDate.fromString(self.ui.tableWidget_nhatkyanuong.item(row, 1).text(), "yyyy-MM-dd"))
             self.ui.comboBox_buaan.setCurrentText(self.ui.tableWidget_nhatkyanuong.item(row, 2).text())
@@ -142,7 +139,6 @@ class NhatKyAnUongScreen(QtWidgets.QWidget, NhatKyAnUongUtils):
             self.ui.lineEdit_ghichu.setText(self.ui.tableWidget_nhatkyanuong.item(row, 6).text())
             
         finally:
-            # --- MỞ LẠI TÍN HIỆU: Cho phép ComboBox hoạt động bình thường sau khi gán xong ---
             self.ui.comboBox_hoso.blockSignals(False)
 
         # Chủ động gọi cập nhật thống kê sau khi dữ liệu form đã được điền hoàn toàn chuẩn xác
@@ -221,7 +217,6 @@ class NhatKyAnUongScreen(QtWidgets.QWidget, NhatKyAnUongUtils):
             # 2. Lấy ho_so_id từ comboBox
             ho_so_id = self.ui.comboBox_hoso.currentData()
 
-            # --- GIẢI PHÁP SỬA LỖI KHÔNG HIỆN SỐ ---
             # Nếu comboBox không trả về ID (do bị lệch text), ta tự tìm ID từ database dựa vào chữ đang hiển thị
             if ho_so_id is None or ho_so_id == "":
                 ten_hien_tai = self.ui.comboBox_hoso.currentText().strip()
@@ -270,3 +265,4 @@ class NhatKyAnUongScreen(QtWidgets.QWidget, NhatKyAnUongUtils):
 
         except Exception as e:
             print("Lỗi tính toán thống kê nhật ký ăn uống:", e)
+                    

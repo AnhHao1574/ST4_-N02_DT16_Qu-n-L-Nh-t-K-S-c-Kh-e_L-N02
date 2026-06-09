@@ -1,3 +1,4 @@
+from PyQt5 import QtWidgets
 import matplotlib
 from styles.thongkesuckhoe_style import THONGKE_STYLE
 matplotlib.use("Qt5Agg")
@@ -24,39 +25,15 @@ class ThongKeSucKhoeScreen(QDialog):
         self.load_thong_ke()
         self.setup_chart()
 
+
+
     def set_ho_so_id(self, ho_so_id):
         self.ho_so_id = ho_so_id
         self.load_thong_ke()
         self.setup_chart()
 
-    def resizeEvent(self, event):
-        super().resizeEvent(event)
-        self.cap_nhat_kich_thuoc_giao_dien()
-
-    def cap_nhat_kich_thuoc_giao_dien(self):
-        margin = 20
-        gap = 20
-        width = max(self.width() - margin * 2, 980)
-        height = max(self.height() - margin * 2, 620)
-
-        top_height = max(int(height * 0.48), 310)
-        left_width = 470
-        right_width = max(width - left_width - gap, 420)
-        bottom_top = margin + top_height + gap
-        bottom_height = max(height - top_height - gap, 260)
-
-        # Định vị các widget tự động co giãn theo cửa sổ chính
-        self.ui.groupBox.setGeometry(margin, margin, left_width, top_height)
-        self.ui.chart_widget_cannang.setGeometry(margin + left_width + gap, margin, right_width, top_height)
-        self.ui.chart_widget_calo.setGeometry(margin, bottom_top, width, bottom_height)
-
-        self.ui.figure_weight.tight_layout()
-        self.ui.figure_calo.tight_layout()
-        self.ui.chart_widget_cannang.draw_idle()
-        self.ui.chart_widget_calo.draw_idle()
-
     # =====================================================
-    # XỬ LÝ VÀ VẼ BIỂU ĐỒ (Đã làm gọn mắt)
+    # XỬ LÝ VÀ VẼ BIỂU ĐỒ 
     # =====================================================
     def setup_chart(self):
         if not self.ho_so_id:
@@ -67,10 +44,11 @@ class ThongKeSucKhoeScreen(QDialog):
         
         # --- 1. BIỂU ĐỒ CÂN NẶNG ---
         cursor.execute("""
-            SELECT ngay, can_nang 
-            FROM chi_so 
-            WHERE ho_so_id=? 
-            ORDER BY ngay ASC
+            SELECT c.ngay, c.can_nang 
+            FROM chi_so c
+            JOIN ho_so h ON c.ho_so_id = h.id
+            WHERE h.user_id = (SELECT user_id FROM ho_so WHERE id = ?)
+            ORDER BY c.ngay ASC
         """, (self.ho_so_id,))
         rows = cursor.fetchall()
 
@@ -89,7 +67,7 @@ class ThongKeSucKhoeScreen(QDialog):
         
         if dates:
             ax.plot(dates, weights, marker='o', color='#2ecc71', linewidth=2)
-            ax.grid(True, linestyle=':', alpha=0.5)  # Lưới mờ giúp nhìn mốc chỉ số gọn gàng
+            ax.grid(True, linestyle=':', alpha=0.5)  
             ax.set_title("Biến động cân nặng (Kg)", fontsize=10, fontweight='bold')
             ax.tick_params(axis="x", labelrotation=20, labelsize=9)
         else:
@@ -99,11 +77,12 @@ class ThongKeSucKhoeScreen(QDialog):
 
         # --- 2. BIỂU ĐỒ CALO ---
         cursor.execute("""
-            SELECT date(ngay), SUM(CAST(calo AS REAL) * CAST(so_luong AS REAL))
-            FROM an_uong 
-            WHERE ho_so_id=? 
-            GROUP BY date(ngay) 
-            ORDER BY date(ngay) ASC
+            SELECT date(a.ngay), SUM(CAST(a.calo AS REAL) * CAST(a.so_luong AS REAL))
+            FROM an_uong a
+            JOIN ho_so h ON a.ho_so_id = h.id
+            WHERE h.user_id = (SELECT user_id FROM ho_so WHERE id = ?)
+            GROUP BY date(a.ngay) 
+            ORDER BY date(a.ngay) ASC
         """, (self.ho_so_id,))
         rows_calo = cursor.fetchall()
 
@@ -111,7 +90,6 @@ class ThongKeSucKhoeScreen(QDialog):
         calos = []
         for row in rows_calo:
             try:
-                # GỌN GÀNG: Đổi định dạng ngày thành DD/MM để cột không bị dính chữ đè lên nhau
                 d_formatted = datetime.strptime(row[0], "%Y-%m-%d").strftime("%d/%m")
                 dates_calo.append(d_formatted)
             except:
@@ -139,10 +117,11 @@ class ThongKeSucKhoeScreen(QDialog):
         conn = get_connection()
         cursor = conn.cursor()
         cursor.execute("""
-            SELECT SUM(CAST(calo AS REAL) * CAST(so_luong AS REAL))
-            FROM an_uong
-            WHERE ho_so_id = ?
-            AND date(ngay) = date('now', 'localtime')
+            SELECT SUM(CAST(a.calo AS REAL) * CAST(a.so_luong AS REAL))
+            FROM an_uong a
+            JOIN ho_so h ON a.ho_so_id = h.id
+            WHERE h.user_id = (SELECT user_id FROM ho_so WHERE id = ?)
+            AND date(a.ngay) = date('now', 'localtime')
         """, (self.ho_so_id,))
         row = cursor.fetchone()
         conn.close()
@@ -199,7 +178,10 @@ class ThongKeSucKhoeScreen(QDialog):
                 else:
                     bmr = 10 * can_nang + 6.25 * chieu_cao - 5 * tuoi - 161
 
-                he_so = {"Ít vận động": 1.2, "Vận động nhẹ": 1.375, "Vận động vừa": 1.55, "Vận động nặng": 1.725}
+                he_so = {
+                    "Ít vận động": 1.2, "Vận động nhẹ": 1.375, "Vận động vừa": 1.55, "Vận động nặng": 1.725,
+                    "Thap": 1.2, "Trung binh": 1.55, "Cao": 1.725
+                }
                 tdee = bmr * he_so.get(muc_do, 1.2)
                 self.ui.lineEdit_TDEE.setText(f"{round(tdee)} kcal")
 

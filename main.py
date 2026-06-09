@@ -34,22 +34,33 @@ class MainWindow(QMainWindow):
         self.ho_so_id = self.lay_ho_so_id()
 
         if self.ho_so_id is None and self.current_role != "admin":
-
             self.ui.ThongKe_btn_1.hide()
             self.ui.ThongKe_btn_2.hide()
 
             self.ui.NhatKy_btn_1.hide()
             self.ui.NhatKy_btn_2.hide()
 
-            self.ui.HoSo_btn_1.hide()
-            self.ui.HoSo_btn_2.hide()
+            # Giữ nút Hồ sơ sức khỏe luôn hiển thị để người dùng mới có thể tạo hồ sơ
+            self.ui.HoSo_btn_1.show()
+            self.ui.HoSo_btn_2.show()
+        else:
+            # Mở khóa hiển thị đầy đủ các nút
+            self.ui.ThongKe_btn_1.show()
+            self.ui.ThongKe_btn_2.show()
+            self.ui.NhatKy_btn_1.show()
+            self.ui.NhatKy_btn_2.show()
+            self.ui.HoSo_btn_1.show()
+            self.ui.HoSo_btn_2.show()
 
         self.ui.user_btn.setText(self.current_user)
         self.ui.user_btn.setMinimumWidth(180)
-        # --- KHỞI TẠO VÀ NHÚNG CÁC MÀN HÌNH ---
         
         # 1. Nhật ký ăn uống
         self.screen_nhatky_anuong = NhatKyAnUongScreen(self.current_user, self.current_role)
+        if self.ho_so_id is not None:
+            idx = self.screen_nhatky_anuong.ui.comboBox_hoso.findData(self.ho_so_id)
+            if idx >= 0:
+                self.screen_nhatky_anuong.ui.comboBox_hoso.setCurrentIndex(idx)
         # Kiểm tra và thêm vào layout của page
         if self.ui.page.layout() is None:
             # Nếu trong Designer chưa có layout, ta tạo mới
@@ -65,6 +76,7 @@ class MainWindow(QMainWindow):
         self.setMinimumSize(1200, 700)
         # 2. Hồ sơ sức khỏe
         self.screen_hoso = HoSoSucKhoeScreen(self.current_user, role=self.current_role)
+        self.screen_hoso.ho_so_created.connect(self.on_ho_so_created)
         if self.ui.page_2.layout() is None:
             layout_page2 = QtWidgets.QVBoxLayout(self.ui.page_2)
             layout_page2.setContentsMargins(0, 0, 0, 0)
@@ -74,7 +86,7 @@ class MainWindow(QMainWindow):
         self.setMinimumSize(1200, 700)
 
         # 3. Thống kê sức khỏe
-        self.screen_thongke = ThongKeSucKhoeScreen(None)
+        self.screen_thongke = ThongKeSucKhoeScreen(self.ho_so_id)
         if self.ui.page_3.layout() is None:
             layout_page3 = QtWidgets.QVBoxLayout(self.ui.page_3)
             layout_page3.setContentsMargins(0, 0, 0, 0)
@@ -89,7 +101,7 @@ class MainWindow(QMainWindow):
             self.ui.page_4.setLayout(layout_page4)
         self.ui.page_4.layout().addWidget(self.screen_quanly_taikhoan)
 
-        # 5. Trang thông tin người dùng (Đã tách riêng thành class)
+        # 5. Trang thông tin người dùng 
         self.screen_thongtin_user = UsersScreen(self.current_user, self.current_role)
         if self.ui.page_7.layout() is None:
             layout_page7 = QtWidgets.QVBoxLayout(self.ui.page_7)
@@ -100,8 +112,19 @@ class MainWindow(QMainWindow):
 
         # --- CẤU HÌNH BAN ĐẦU ---
         self.ui.icon_only_widget.hide()
-        self.ui.stackedWidget.setCurrentIndex(0) # Mở trang Nhật ký đầu tiên
-        self.ui.NhatKy_btn_1.setChecked(True)
+        
+        # Ẩn chức năng tìm kiếm và tab "Khác" không cần thiết
+        self.ui.search_input.hide()
+        self.ui.search_btn.hide()
+        self.ui.products_btn_1.hide()
+        self.ui.products_btn_2.hide()
+        
+        if self.ho_so_id is None and self.current_role != "admin":
+            self.ui.stackedWidget.setCurrentIndex(1) # Mở trang Hồ sơ sức khỏe trước để người dùng mới tạo hồ sơ
+            self.ui.HoSo_btn_2.setChecked(True)
+        else:
+            self.ui.stackedWidget.setCurrentIndex(0) # Mở trang Nhật ký đầu tiên
+            self.ui.NhatKy_btn_2.setChecked(True)
         self.phan_quyen()
 
         # Ngắt kết nối mặc định (chỉ đóng ứng dụng) từ file UI
@@ -172,15 +195,24 @@ class MainWindow(QMainWindow):
     def on_NhatKy_btn_1_toggled(self, checked):
         if checked:
             self.ui.stackedWidget.setCurrentIndex(0)
-            # Cập nhật lại dữ liệu mỗi khi nhấn vào nút
-            if hasattr(self.screen_nhatky_anuong, 'LayDuLieuAnUong'):
+            if hasattr(self, 'screen_nhatky_anuong'):
+                self.screen_nhatky_anuong.LoadHoSo()
                 self.screen_nhatky_anuong.LayDuLieuAnUong()
+                if self.ho_so_id is not None:
+                    idx = self.screen_nhatky_anuong.ui.comboBox_hoso.findData(self.ho_so_id)
+                    if idx >= 0:
+                        self.screen_nhatky_anuong.ui.comboBox_hoso.setCurrentIndex(idx)
     
     def on_NhatKy_btn_2_toggled(self, checked):
         if checked:
             self.ui.stackedWidget.setCurrentIndex(0)
-            if hasattr(self.screen_nhatky_anuong, 'LayDuLieuAnUong'):
+            if hasattr(self, 'screen_nhatky_anuong'):
+                self.screen_nhatky_anuong.LoadHoSo()
                 self.screen_nhatky_anuong.LayDuLieuAnUong()
+                if self.ho_so_id is not None:
+                    idx = self.screen_nhatky_anuong.ui.comboBox_hoso.findData(self.ho_so_id)
+                    if idx >= 0:
+                        self.screen_nhatky_anuong.ui.comboBox_hoso.setCurrentIndex(idx)
 
     def on_HoSo_btn_1_toggled(self, checked):
         if checked:
@@ -258,6 +290,25 @@ class MainWindow(QMainWindow):
             return row[0]
 
         return None
+
+    def on_ho_so_created(self, ho_so_id):
+        self.ho_so_id = ho_so_id
+        # Mở khóa hiển thị các nút chức năng
+        self.ui.ThongKe_btn_1.show()
+        self.ui.ThongKe_btn_2.show()
+        self.ui.NhatKy_btn_1.show()
+        self.ui.NhatKy_btn_2.show()
+        
+        # Cập nhật ID hồ sơ vào màn hình Thống kê
+        if hasattr(self, 'screen_thongke'):
+            self.screen_thongke.set_ho_so_id(ho_so_id)
+
+        # Cập nhật danh sách hồ sơ ở màn hình Nhật ký ăn uống và chọn hồ sơ vừa tạo
+        if hasattr(self, 'screen_nhatky_anuong'):
+            self.screen_nhatky_anuong.LoadHoSo()
+            idx = self.screen_nhatky_anuong.ui.comboBox_hoso.findData(ho_so_id)
+            if idx >= 0:
+                self.screen_nhatky_anuong.ui.comboBox_hoso.setCurrentIndex(idx)
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

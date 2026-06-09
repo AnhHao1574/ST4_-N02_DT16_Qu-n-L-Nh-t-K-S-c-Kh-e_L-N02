@@ -15,7 +15,8 @@ class NhatKyAnUongUtils:
             a.ten_mon,
             a.so_luong,
             a.calo,
-            a.ghi_chu
+            a.ghi_chu,
+            a.ho_so_id
         FROM an_uong a
         JOIN ho_so h
         ON a.ho_so_id = h.id
@@ -143,9 +144,10 @@ class NhatKyAnUongUtils:
         cursor = conn.cursor()
 
         cursor.execute("""
-            SELECT SUM(calo * so_luong)
-            FROM an_uong
-            WHERE ho_so_id=? AND ngay=?
+            SELECT SUM(a.calo * a.so_luong)
+            FROM an_uong a
+            JOIN ho_so h ON a.ho_so_id = h.id
+            WHERE h.user_id = (SELECT user_id FROM ho_so WHERE id = ?) AND a.ngay=?
         """, (ho_so_id, ngay))
 
         result = cursor.fetchone()[0]
@@ -213,7 +215,10 @@ class NhatKyAnUongUtils:
             "Ít vận động": 1.2,
             "Vận động nhẹ": 1.375,
             "Vận động vừa": 1.55,
-            "Vận động nặng": 1.725
+            "Vận động nặng": 1.725,
+            "Thap": 1.2,
+            "Trung binh": 1.55,
+            "Cao": 1.725
         }
 
         tdee = bmr * he_so.get(muc_do, 1.2)

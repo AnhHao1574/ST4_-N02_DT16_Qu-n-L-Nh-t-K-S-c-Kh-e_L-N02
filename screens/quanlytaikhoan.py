@@ -13,22 +13,18 @@ class QuanLyTaiKhoanScreen(QtWidgets.QWidget, QuanLyTaiKhoanUtils):
         self.ui = Ui_QuanLyTaiKhoan()
         self.ui.setupUi(self)
         self.setStyleSheet(QUANLYTAIKHOAN_STYLE)
+
+        # Kết nối sự kiện các nút bấm và chọn dòng trên bảng
+        self.ui.btnAdd.clicked.connect(self.add_account)
+        self.ui.btnUpdate.clicked.connect(self.update_account)
+        self.ui.btnDelete.clicked.connect(self.delete_account)
+        self.ui.btnReset.clicked.connect(self.reset_form)
+        self.ui.table.itemSelectionChanged.connect(self.select_account)
+
         self.load_accounts()
 
     def load_accounts(self):
         rows = self.load_accounts_db()
-
-        self.ui.table.setRowCount(0)
-
-        for row_index, row_data in enumerate(rows):
-            self.ui.table.insertRow(row_index)
-
-            for col_index, value in enumerate(row_data):
-                item = QtWidgets.QTableWidgetItem(str(value))
-                item.setFlags(item.flags() & ~QtCore.Qt.ItemIsEditable)
-
-                self.ui.table.setItem(row_index, col_index, item)
-
         self.ui.table.setRowCount(0)
         for row_index, row_data in enumerate(rows):
             self.ui.table.insertRow(row_index)

@@ -157,6 +157,60 @@ class Ui_Dialog(object):
         self.btn_reset.setFont(font_btn)
         self.btn_reset.setObjectName("btn_reset")
 
+        # 1. Layout các nút bấm (Vertical Layout)
+        btn_layout = QtWidgets.QVBoxLayout()
+        btn_layout.setSpacing(10)
+        if hasattr(self, 'btn_them'): btn_layout.addWidget(self.btn_them)
+        btn_layout.addWidget(self.btn_sua)
+        if hasattr(self, 'btn_xoa'): btn_layout.addWidget(self.btn_xoa)
+        btn_reset_widget = self.btn_reset
+        btn_layout.addWidget(btn_reset_widget)
+        btn_layout.addStretch()
+
+        # 2. Layout form nhập liệu bên trái (Grid Layout)
+        form_grid = QtWidgets.QGridLayout()
+        form_grid.setSpacing(12)
+        
+        # Cột 1
+        form_grid.addWidget(self.label_2, 0, 0)
+        form_grid.addWidget(self.lineEdit_hoten, 0, 1)
+        form_grid.addWidget(self.label_3, 1, 0)
+        form_grid.addWidget(self.spinBox_tuoi, 1, 1)
+        form_grid.addWidget(self.label_8, 2, 0)
+        form_grid.addWidget(self.lineEdit_huyetap, 2, 1)
+        form_grid.addWidget(self.label_9, 3, 0)
+        form_grid.addWidget(self.lineEdit_nhiptim, 3, 1)
+        
+        # Cột 2
+        form_grid.addWidget(self.label_4, 0, 2)
+        form_grid.addWidget(self.comboBox_gioitinh, 0, 3)
+        form_grid.addWidget(self.label_6, 1, 2)
+        form_grid.addWidget(self.lineEdit_chieucao, 1, 3)
+        form_grid.addWidget(self.label_5, 2, 2)
+        form_grid.addWidget(self.lineEdit_cannang, 2, 3)
+        
+        # Thiết lập tỉ lệ co giãn cho các cột nhập liệu
+        form_grid.setColumnStretch(0, 1)
+        form_grid.setColumnStretch(1, 2)
+        form_grid.setColumnStretch(2, 1)
+        form_grid.setColumnStretch(3, 2)
+
+        # 3. Gom form và nút bấm vào groupBox
+        group_layout = QtWidgets.QHBoxLayout(self.groupBox)
+        group_layout.setContentsMargins(15, 25, 15, 15)
+        group_layout.setSpacing(20)
+        group_layout.addLayout(form_grid, 4)  # Form chiếm 4 phần
+        group_layout.addLayout(btn_layout, 1)  # Nút bấm chiếm 1 phần
+
+        # 4. Layout chính của Dialog
+        main_layout = QtWidgets.QVBoxLayout(Dialog)
+        main_layout.setContentsMargins(15, 15, 15, 15)
+        main_layout.setSpacing(15)
+        main_layout.addWidget(self.groupBox, 0)
+        main_layout.addWidget(self.tableWidget_hososuckhoe, 1)
+        
+        Dialog.setLayout(main_layout)
+
         self.retranslateUi(Dialog)
         QtCore.QMetaObject.connectSlotsByName(Dialog)
 

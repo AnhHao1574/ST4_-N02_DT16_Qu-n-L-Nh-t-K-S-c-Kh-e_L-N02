@@ -1,0 +1,299 @@
+DELETE FROM an_uong;
+DELETE FROM chi_so;
+DELETE FROM ho_so;
+DELETE FROM users;
+DELETE FROM sqlite_sequence WHERE name='users';
+DELETE FROM sqlite_sequence;
+SELECT * FROM users;
+SELECT * FROM ho_so;
+INSERT INTO users (id, username, password, role, status) VALUES
+(1,'admin','123','admin','active'),
+
+(2,'nguyenvana','123','user','active'),
+(3,'tranthib','123','user','active'),
+(4,'lethic','123','user','active'),
+(5,'phamvand','123','user','active'),
+(6,'hoangthie','123','user','active'),
+(7,'vuquangf','123','user','active'),
+(8,'dangthig','123','user','active'),
+(9,'buiduch','123','user','active'),
+(10,'doanvani','123','user','active');
+
+
+INSERT INTO ho_so (id, user_id, ho_ten, tuoi, gioi_tinh, chieu_cao, muc_do_van_dong) VALUES
+
+-- user 2 (Nguyen Van A)
+(1,2,'Nguyen Van A',18,'Nam',170.0,'Thap'),
+(2,2,'Nguyen Van A',19,'Nam',170.0,'Trung binh'),
+(3,2,'Nguyen Van A',20,'Nam',170.0,'Cao'),
+(4,2,'Nguyen Van A',21,'Nam',170.0,'Trung binh'),
+(5,2,'Nguyen Van A',22,'Nam',170.0,'Thap'),
+
+-- user 3
+(6,3,'Tran Thi B',18,'Nu',160.0,'Trung binh'),
+(7,3,'Tran Thi B',19,'Nu',160.0,'Cao'),
+(8,3,'Tran Thi B',20,'Nu',160.0,'Thap'),
+(9,3,'Tran Thi B',21,'Nu',160.0,'Trung binh'),
+(10,3,'Tran Thi B',22,'Nu',160.0,'Cao'),
+
+-- user 4
+(11,4,'Le Thi C',18,'Nu',158.0,'Thap'),
+(12,4,'Le Thi C',19,'Nu',158.0,'Trung binh'),
+(13,4,'Le Thi C',20,'Nu',158.0,'Cao'),
+(14,4,'Le Thi C',21,'Nu',158.0,'Trung binh'),
+(15,4,'Le Thi C',22,'Nu',158.0,'Thap'),
+
+-- user 5
+(16,5,'Pham Van D',18,'Nam',175.0,'Trung binh'),
+(17,5,'Pham Van D',19,'Nam',175.0,'Cao'),
+(18,5,'Pham Van D',20,'Nam',175.0,'Thap'),
+(19,5,'Pham Van D',21,'Nam',175.0,'Trung binh'),
+(20,5,'Pham Van D',22,'Nam',175.0,'Cao'),
+
+-- user 6
+(21,6,'Hoang Thi E',18,'Nu',162.0,'Thap'),
+(22,6,'Hoang Thi E',19,'Nu',162.0,'Trung binh'),
+(23,6,'Hoang Thi E',20,'Nu',162.0,'Cao'),
+(24,6,'Hoang Thi E',21,'Nu',162.0,'Trung binh'),
+(25,6,'Hoang Thi E',22,'Nu',162.0,'Thap'),
+
+-- user 7
+(26,7,'Vu Quang F',18,'Nam',172.0,'Trung binh'),
+(27,7,'Vu Quang F',19,'Nam',172.0,'Cao'),
+(28,7,'Vu Quang F',20,'Nam',172.0,'Thap'),
+(29,7,'Vu Quang F',21,'Nam',172.0,'Trung binh'),
+(30,7,'Vu Quang F',22,'Nam',172.0,'Cao'),
+
+-- user 8
+(31,8,'Dang Thi G',18,'Nu',155.0,'Thap'),
+(32,8,'Dang Thi G',19,'Nu',155.0,'Trung binh'),
+(33,8,'Dang Thi G',20,'Nu',155.0,'Cao'),
+(34,8,'Dang Thi G',21,'Nu',155.0,'Trung binh'),
+(35,8,'Dang Thi G',22,'Nu',155.0,'Thap'),
+
+-- user 9
+(36,9,'Bui Duc H',18,'Nam',178.0,'Cao'),
+(37,9,'Bui Duc H',19,'Nam',178.0,'Trung binh'),
+(38,9,'Bui Duc H',20,'Nam',178.0,'Thap'),
+(39,9,'Bui Duc H',21,'Nam',178.0,'Cao'),
+(40,9,'Bui Duc H',22,'Nam',178.0,'Trung binh'),
+
+-- user 10
+(41,10,'Doan Van I',18,'Nam',168.0,'Thap'),
+(42,10,'Doan Van I',19,'Nam',168.0,'Trung binh'),
+(43,10,'Doan Van I',20,'Nam',168.0,'Cao'),
+(44,10,'Doan Van I',21,'Nam',168.0,'Trung binh'),
+(45,10,'Doan Van I',22,'Nam',168.0,'Thap');
+
+
+
+INSERT INTO an_uong (ho_so_id, ngay, bua_an, calo, ten_mon, so_luong, ghi_chu) VALUES
+
+-- =========================
+-- USER 2: ăn MẶN + ăn nhiều
+-- =========================
+(1,'2025-06-01','Sang',450,'Banh mi trung',1,'an man - an nhieu'),
+(1,'2025-06-01','Trua',700,'Com ga xoi mo',1,'an man - an nhieu'),
+(2,'2025-06-02','Chieu',300,'Tra sua',1,'an man - an it'),
+(3,'2025-06-03','Toi',650,'Pho bo',1,'an man - an nhieu'),
+(4,'2025-06-04','Sang',500,'Bun bo',1,'an man - an nhieu'),
+(5,'2025-06-05','Trua',800,'Com thit kho',1,'an man - an nhieu'),
+(1,'2025-06-06','Toi',600,'Mi xao bo',1,'an man - an nhieu'),
+(2,'2025-06-07','Sang',250,'Chao trung',1,'an it'),
+(3,'2025-06-08','Trua',750,'Com chien duong chau',1,'an man - an nhieu'),
+(4,'2025-06-09','Toi',400,'Banh mi pate',1,'an man'),
+
+-- =========================
+-- USER 3: ăn CHAY + ăn ít
+-- =========================
+(6,'2025-06-01','Sang',250,'Yen mach trai cay',1,'an chay - an it'),
+(6,'2025-06-01','Trua',400,'Com chay dau hu',1,'an chay'),
+(7,'2025-06-02','Chieu',200,'Sinh to xanh',1,'an chay - an it'),
+(8,'2025-06-03','Toi',450,'Bun chay rau cu',1,'an chay'),
+(9,'2025-06-04','Sang',300,'Banh mi chay',1,'an chay'),
+(10,'2025-06-05','Trua',500,'Com chay',1,'an chay'),
+(6,'2025-06-06','Toi',350,'Mi chay',1,'an chay - an it'),
+(7,'2025-06-07','Sang',250,'Chao yen mach',1,'an chay'),
+(8,'2025-06-08','Trua',450,'Salad rau cu',1,'an chay - an it'),
+(9,'2025-06-09','Toi',400,'Com chay dau hu',1,'an chay'),
+
+-- =========================
+-- USER 4: ăn MẶN + ăn ít
+-- =========================
+(11,'2025-06-01','Sang',300,'Banh cuon',1,'an it'),
+(11,'2025-06-01','Trua',650,'Com suon',1,'an man'),
+(12,'2025-06-02','Chieu',200,'Sua chua',1,'an it'),
+(13,'2025-06-03','Toi',700,'Pho ga',1,'an man - an nhieu'),
+(14,'2025-06-04','Sang',350,'Bun rieu',1,'an man'),
+(15,'2025-06-05','Trua',600,'Com thit heo',1,'an man'),
+(11,'2025-06-06','Toi',400,'Mi quang',1,'an man'),
+(12,'2025-06-07','Sang',250,'Trai cay',1,'an it'),
+(13,'2025-06-08','Trua',750,'Com chien',1,'an man - an nhieu'),
+(14,'2025-06-09','Toi',500,'Banh mi thit',1,'an man'),
+
+-- =========================
+-- USER 5: ăn CHAY + trung bình
+-- =========================
+(16,'2025-06-01','Sang',300,'Chao chay',1,'an chay'),
+(16,'2025-06-01','Trua',450,'Com chay',1,'an chay'),
+(17,'2025-06-02','Chieu',200,'Nuoc ep cam',1,'an chay - an it'),
+(18,'2025-06-03','Toi',500,'Mi chay',1,'an chay'),
+(19,'2025-06-04','Sang',350,'Banh mi chay',1,'an chay'),
+(20,'2025-06-05','Trua',500,'Com dau hu',1,'an chay'),
+(16,'2025-06-06','Toi',400,'Salad',1,'an chay'),
+(17,'2025-06-07','Sang',250,'Yen mach',1,'an it'),
+(18,'2025-06-08','Trua',450,'Bun chay',1,'an chay'),
+(19,'2025-06-09','Toi',500,'Com chay',1,'an chay'),
+
+-- =========================
+-- USER 6: ăn MẶN + ăn nhiều
+-- =========================
+(21,'2025-06-01','Sang',500,'Banh mi thit',1,'an man'),
+(21,'2025-06-01','Trua',800,'Com ga quay',1,'an man - an nhieu'),
+(22,'2025-06-02','Chieu',300,'Tra sua',1,'an it'),
+(23,'2025-06-03','Toi',700,'Pho bo dac biet',1,'an man - an nhieu'),
+(24,'2025-06-04','Sang',450,'Bun bo',1,'an man'),
+(25,'2025-06-05','Trua',850,'Com suon non',1,'an man - an nhieu'),
+(21,'2025-06-06','Toi',650,'Mi xao hai san',1,'an man'),
+(22,'2025-06-07','Sang',250,'Chao trung',1,'an it'),
+(23,'2025-06-08','Trua',900,'Com chien',1,'an man - an nhieu'),
+(24,'2025-06-09','Toi',500,'Banh mi pate',1,'an man'),
+
+-- =========================
+-- USER 7: ăn CHAY + ăn ít
+-- =========================
+(26,'2025-06-01','Sang',250,'Sinh to',1,'an chay - an it'),
+(26,'2025-06-01','Trua',400,'Com chay',1,'an chay'),
+(27,'2025-06-02','Chieu',200,'Nuoc ep',1,'an it'),
+(28,'2025-06-03','Toi',450,'Mi chay',1,'an chay'),
+(29,'2025-06-04','Sang',300,'Chao chay',1,'an chay'),
+(30,'2025-06-05','Trua',500,'Com dau hu',1,'an chay'),
+(26,'2025-06-06','Toi',350,'Salad',1,'an it'),
+(27,'2025-06-07','Sang',250,'Yen mach',1,'an chay'),
+(28,'2025-06-08','Trua',400,'Bun chay',1,'an chay'),
+(29,'2025-06-09','Toi',450,'Com chay',1,'an chay'),
+
+-- =========================
+-- USER 8: ăn MẶN + trung bình
+-- =========================
+(31,'2025-06-01','Sang',400,'Banh mi trung',1,'an man'),
+(31,'2025-06-01','Trua',650,'Com suon',1,'an man'),
+(32,'2025-06-02','Chieu',300,'Trai cay',1,'an it'),
+(33,'2025-06-03','Toi',700,'Pho ga',1,'an man'),
+(34,'2025-06-04','Sang',450,'Bun rieu',1,'an man'),
+(35,'2025-06-05','Trua',600,'Com thit kho',1,'an man'),
+(31,'2025-06-06','Toi',500,'Mi xao',1,'an man'),
+(32,'2025-06-07','Sang',250,'Chao',1,'an it'),
+(33,'2025-06-08','Trua',750,'Com chien',1,'an man'),
+(34,'2025-06-09','Toi',400,'Banh mi',1,'an man'),
+
+-- =========================
+-- USER 9: ăn MẶN + ăn nhiều
+-- =========================
+(36,'2025-06-01','Sang',500,'Banh mi thit',1,'an man'),
+(36,'2025-06-01','Trua',800,'Com ga quay',1,'an man - an nhieu'),
+(37,'2025-06-02','Chieu',300,'Tra sua',1,'an it'),
+(38,'2025-06-03','Toi',700,'Pho bo',1,'an man'),
+(39,'2025-06-04','Sang',450,'Bun bo',1,'an man'),
+(40,'2025-06-05','Trua',850,'Com suon',1,'an man - an nhieu'),
+(36,'2025-06-06','Toi',650,'Mi xao bo',1,'an man'),
+(37,'2025-06-07','Sang',250,'Chao trung',1,'an it'),
+(38,'2025-06-08','Trua',900,'Com chien',1,'an man - an nhieu'),
+(39,'2025-06-09','Toi',500,'Banh mi pate',1,'an man'),
+
+-- =========================
+-- USER 10: ăn CHAY + ăn ít
+-- =========================
+(41,'2025-06-01','Sang',250,'Sinh to',1,'an chay'),
+(41,'2025-06-01','Trua',400,'Com chay',1,'an chay'),
+(42,'2025-06-02','Chieu',200,'Nuoc ep',1,'an it'),
+(43,'2025-06-03','Toi',450,'Mi chay',1,'an chay'),
+(44,'2025-06-04','Sang',300,'Chao chay',1,'an chay'),
+(45,'2025-06-05','Trua',500,'Com dau hu',1,'an chay'),
+(41,'2025-06-06','Toi',350,'Salad',1,'an it'),
+(42,'2025-06-07','Sang',250,'Yen mach',1,'an chay'),
+(43,'2025-06-08','Trua',400,'Bun chay',1,'an chay'),
+(44,'2025-06-09','Toi',450,'Com chay',1,'an chay');
+
+INSERT INTO chi_so (ho_so_id, can_nang, huyet_ap, nhip_tim, ngay) VALUES
+
+-- =========================
+-- USER 2 (ăn mặn, tăng cân)
+-- =========================
+(1,55,'110/70',72,'2025-01-01'),
+(2,56,'112/72',74,'2025-02-01'),
+(3,57.5,'115/75',75,'2025-03-01'),
+(4,58.5,'118/76',76,'2025-04-01'),
+(5,60,'120/78',78,'2025-05-01'),
+
+-- =========================
+-- USER 3 (ăn chay, giảm nhẹ)
+-- =========================
+(6,52,'108/68',70,'2025-01-01'),
+(7,51.5,'110/70',71,'2025-02-01'),
+(8,51,'112/72',70,'2025-03-01'),
+(9,50.5,'111/70',69,'2025-04-01'),
+(10,50,'110/68',68,'2025-05-01'),
+
+-- =========================
+-- USER 4 (ăn mặn trung bình)
+-- =========================
+(11,60,'115/75',75,'2025-01-01'),
+(12,60.5,'116/76',76,'2025-02-01'),
+(13,61,'118/77',77,'2025-03-01'),
+(14,60.8,'117/76',76,'2025-04-01'),
+(15,61.2,'119/78',78,'2025-05-01'),
+
+-- =========================
+-- USER 5 (ăn chay)
+-- =========================
+(16,48,'105/65',68,'2025-01-01'),
+(17,47.5,'104/64',67,'2025-02-01'),
+(18,47,'103/63',66,'2025-03-01'),
+(19,46.5,'102/62',65,'2025-04-01'),
+(20,46,'101/61',64,'2025-05-01'),
+
+-- =========================
+-- USER 6 (ăn mặn nhiều → tăng mạnh)
+-- =========================
+(21,62,'118/78',78,'2025-01-01'),
+(22,63,'120/80',79,'2025-02-01'),
+(23,64.5,'122/82',80,'2025-03-01'),
+(24,66,'125/85',82,'2025-04-01'),
+(25,67.5,'128/86',84,'2025-05-01'),
+
+-- =========================
+-- USER 7 (ăn chay giảm)
+-- =========================
+(26,50,'106/66',69,'2025-01-01'),
+(27,49.5,'105/65',68,'2025-02-01'),
+(28,49,'104/64',67,'2025-03-01'),
+(29,48.5,'103/63',66,'2025-04-01'),
+(30,48,'102/62',65,'2025-05-01'),
+
+-- =========================
+-- USER 8 (ăn mặn trung bình)
+-- =========================
+(31,70,'120/80',78,'2025-01-01'),
+(32,70.5,'121/81',79,'2025-02-01'),
+(33,71,'122/82',80,'2025-03-01'),
+(34,70.8,'121/80',79,'2025-04-01'),
+(35,71.2,'123/82',80,'2025-05-01'),
+
+-- =========================
+-- USER 9 (ăn nhiều → tăng rõ)
+-- =========================
+(36,68,'118/78',76,'2025-01-01'),
+(37,69,'120/80',78,'2025-02-01'),
+(38,70.5,'122/82',80,'2025-03-01'),
+(39,72,'125/85',82,'2025-04-01'),
+(40,73.5,'128/86',84,'2025-05-01'),
+
+-- =========================
+-- USER 10 (ăn chay giảm)
+-- =========================
+(41,55,'110/70',72,'2025-01-01'),
+(42,54.5,'109/69',71,'2025-02-01'),
+(43,54,'108/68',70,'2025-03-01'),
+(44,53.5,'107/67',69,'2025-04-01'),
+(45,53,'106/66',68,'2025-05-01');

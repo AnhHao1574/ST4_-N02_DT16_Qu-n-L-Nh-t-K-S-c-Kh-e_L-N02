@@ -85,6 +85,34 @@ class Ui_Dialog(object):
         self.chart_widget_calo.setGeometry(QtCore.QRect(10, 350, 1041, 311))
         self.chart_widget_calo.setObjectName("chart_widget_calo")
 
+        # 1. Layout bên trong GroupBox (Form Layout)
+        form_layout = QtWidgets.QFormLayout(self.groupBox)
+        form_layout.setContentsMargins(20, 30, 20, 20)
+        form_layout.setVerticalSpacing(18)
+        form_layout.setHorizontalSpacing(15)
+        form_layout.setFieldGrowthPolicy(QtWidgets.QFormLayout.ExpandingFieldsGrow)
+        
+        form_layout.addRow(self.label_13, self.lineEdit_BMI)
+        form_layout.addRow(self.label_15, self.lineEdit_TDEE)
+        form_layout.addRow(self.label_14, self.lineEdit_Luongnuoc)
+        form_layout.addRow(self.label_calo_hom_nay, self.lineEdit_CaloHomNay)
+
+        # 2. Layout chính của màn hình (Grid Layout)
+        main_layout = QtWidgets.QGridLayout(Dialog)
+        main_layout.setContentsMargins(15, 15, 15, 15)
+        main_layout.setSpacing(15)
+        
+        main_layout.addWidget(self.groupBox, 0, 0, 1, 1)
+        main_layout.addWidget(self.chart_widget_cannang, 0, 1, 1, 1)
+        main_layout.addWidget(self.chart_widget_calo, 1, 0, 1, 2)
+        
+        main_layout.setColumnStretch(0, 4)  # GroupBox thông số chiếm 40%
+        main_layout.setColumnStretch(1, 6)  # Biểu đồ cân nặng chiếm 60%
+        main_layout.setRowStretch(0, 5)     # Hàng trên chiếm 50%
+        main_layout.setRowStretch(1, 5)     # Hàng dưới chiếm 50%
+        
+        Dialog.setLayout(main_layout)
+
         self.retranslateUi(Dialog)
         QtCore.QMetaObject.connectSlotsByName(Dialog)
 

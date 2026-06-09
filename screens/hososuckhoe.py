@@ -7,6 +7,8 @@ from data.database import get_connection
 from PyQt5.QtWidgets import QHeaderView
 
 class HoSoSucKhoeScreen(QtWidgets.QWidget, HoSoSucKhoeUtils):
+    ho_so_created = QtCore.pyqtSignal(int)
+
     def __init__(self, username="", user_id=None, role="user"):
         super().__init__()
         self.username = username
@@ -15,22 +17,10 @@ class HoSoSucKhoeScreen(QtWidgets.QWidget, HoSoSucKhoeUtils):
         
         self.ui = Ui_Dialog()
         self.ui.setupUi(self) 
-        
-        if self.layout() is None:
-            self.main_layout = QtWidgets.QVBoxLayout(self)
-        else:
-            self.main_layout = self.layout()
-
-        self.main_layout.setContentsMargins(15, 25, 15, 15)
-        self.main_layout.setSpacing(10)
-        
-        if self.main_layout.count() > 2:
-            self.main_layout.setStretch(2, 1)
 
         self.setStyleSheet(HOSOSUCKHOE_STYLE)
         self.id_dang_chon = None
         self.ui.tableWidget_hososuckhoe.verticalHeader().setVisible(False)
-        
         header = self.ui.tableWidget_hososuckhoe.horizontalHeader()
         header.setSectionResizeMode(0, QHeaderView.ResizeToContents)
         header.setSectionResizeMode(7, QHeaderView.ResizeToContents)
@@ -52,6 +42,8 @@ class HoSoSucKhoeScreen(QtWidgets.QWidget, HoSoSucKhoeUtils):
         self.ui.tableWidget_hososuckhoe.itemSelectionChanged.connect(self.ChonDong)
         self.HienThiDuLieuLenBang()
 
+
+
     def lay_user_id(self, username):
         if not username:
             return None
@@ -61,33 +53,6 @@ class HoSoSucKhoeScreen(QtWidgets.QWidget, HoSoSucKhoeUtils):
         row = cursor.fetchone()
         conn.close()
         return row[0] if row else None
-
-    def resizeEvent(self, event):
-        super().resizeEvent(event)
-        self.cap_nhat_kich_thuoc_giao_dien()
-
-    def cap_nhat_kich_thuoc_giao_dien(self):
-        margin = 20
-        group_top = 20
-        group_height = 250
-        width = max(self.width() - margin * 2, 880)
-        table_top = group_top + group_height + 15
-        table_height = max(self.height() - table_top - margin, 260)
-
-        self.ui.groupBox.setGeometry(margin, group_top, width, group_height)
-        self.ui.tableWidget_hososuckhoe.setGeometry(margin, table_top, width, table_height)
-
-        button_x = max(630, width - 250)
-        
-        # Cấu hình lại vị trí hiển thị cho cả 4 nút nếu file UI của bạn có chứa
-        buttons_config = []
-        if hasattr(self.ui, 'btn_them'): buttons_config.append((self.ui.btn_them, 30))
-        buttons_config.append((self.ui.btn_sua, 90))
-        if hasattr(self.ui, 'btn_xoa'): buttons_config.append((self.ui.btn_xoa, 150))
-        buttons_config.append((self.ui.btn_reset, 210))
-
-        for button, y in buttons_config:
-            button.setGeometry(button_x, y, 120, 45)
 
     def HienThiDuLieuLenBang(self):
         try:
@@ -176,6 +141,18 @@ class HoSoSucKhoeScreen(QtWidgets.QWidget, HoSoSucKhoeUtils):
                 huyet_ap,
                 nhip_tim
             )
+            
+            # Lấy ID của hồ sơ vừa tạo
+            conn = get_connection()
+            cursor = conn.cursor()
+            cursor.execute("SELECT id FROM ho_so WHERE user_id = ? ORDER BY id DESC LIMIT 1", (int(self.user_id),))
+            new_id_row = cursor.fetchone()
+            conn.close()
+            new_id = new_id_row[0] if new_id_row else None
+            
+            if new_id:
+                self.ho_so_created.emit(new_id)
+
             QtWidgets.QMessageBox.information(self, "Thành công", "Đã thêm dữ liệu chỉ số mới thành công!")
             self.HienThiDuLieuLenBang()
             self.ResetForm()

@@ -200,23 +200,80 @@ class Ui_Dialog(object):
         item = QtWidgets.QTableWidgetItem()
         self.tableWidget_nhatkyanuong.setHorizontalHeaderItem(6, item)
 
+        # 1. Layout nhập liệu bên trái (Form Grid)
+        form_grid = QtWidgets.QGridLayout()
+        form_grid.setSpacing(10)
+        
+        # Dòng 0
+        form_grid.addWidget(self.label_15, 0, 0)
+        form_grid.addWidget(self.comboBox_hoso, 0, 1)
+        form_grid.addWidget(self.label_8, 0, 2)
+        form_grid.addWidget(self.comboBox_buaan, 0, 3)
+        
+        # Dòng 1
+        form_grid.addWidget(self.label_7, 1, 0)
+        form_grid.addWidget(self.dateEdit_ngay, 1, 1)
+        form_grid.addWidget(self.label_9, 1, 2)
+        form_grid.addWidget(self.lineEdit_mon, 1, 3)
+        
+        # Dòng 2
+        form_grid.addWidget(self.label_10, 2, 0)
+        form_grid.addWidget(self.spinBox_soluong, 2, 1)
+        
+        form_grid.addWidget(self.label_11, 2, 2)
+        calo_layout = QtWidgets.QHBoxLayout()
+        calo_layout.setSpacing(5)
+        calo_layout.addWidget(self.lineEdit_calo)
+        calo_layout.addWidget(self.label_12)
+        form_grid.addLayout(calo_layout, 2, 3)
+        
+        # Dòng 3 (Ghi chú trải dài)
+        form_grid.addWidget(self.label_13, 3, 0)
+        form_grid.addWidget(self.lineEdit_ghichu, 3, 1, 1, 3)
+        
+        # Thiết lập tỉ lệ co giãn cột cho Form
+        form_grid.setColumnStretch(0, 1)
+        form_grid.setColumnStretch(1, 3)
+        form_grid.setColumnStretch(2, 1)
+        form_grid.setColumnStretch(3, 3)
+
+        # 2. Layout nút bấm ở giữa (Buttons Vertical)
+        btn_layout = QtWidgets.QVBoxLayout()
+        btn_layout.setSpacing(8)
+        btn_layout.addWidget(self.btn_them)
+        btn_layout.addWidget(self.btn_sua)
+        btn_layout.addWidget(self.btn_xoa)
+        btn_layout.addWidget(self.btn_reset)
+        btn_layout.addStretch()
+
+        # 3. Layout thống kê bên phải (Stats Form)
+        stats_layout = QtWidgets.QFormLayout()
+        stats_layout.setSpacing(10)
+        stats_layout.setContentsMargins(10, 10, 10, 10)
+        stats_layout.setFieldGrowthPolicy(QtWidgets.QFormLayout.ExpandingFieldsGrow)
+        stats_layout.addRow(self.label_14, self.lineEdit_tongcalo)
+        stats_layout.addRow(self.label_16, self.lineEdit_TDEE)
+        stats_layout.addRow(self.label_17, self.lineEdit_trangthai)
+
+        # 4. Gom cả 3 cụm vào groupBox_2 bằng QHBoxLayout
+        group_layout = QtWidgets.QHBoxLayout(self.groupBox_2)
+        group_layout.setContentsMargins(15, 25, 15, 15)
+        group_layout.setSpacing(25)
+        group_layout.addLayout(form_grid, 5)   # Form nhập liệu (5 phần)
+        group_layout.addLayout(btn_layout, 2)   # Cột nút bấm (2 phần)
+        group_layout.addLayout(stats_layout, 4) # Cột thống kê (4 phần)
+
+        # 5. Layout chính của toàn bộ màn hình Nhật Ký
+        main_layout = QtWidgets.QVBoxLayout(Dialog)
+        main_layout.setContentsMargins(15, 15, 15, 15)
+        main_layout.setSpacing(15)
+        main_layout.addWidget(self.groupBox_2, 0)
+        main_layout.addWidget(self.tableWidget_nhatkyanuong, 1)
+        
+        Dialog.setLayout(main_layout)
+
         self.retranslateUi(Dialog)
         QtCore.QMetaObject.connectSlotsByName(Dialog)
-        # Cum thong ke nam ben phai va tu bam theo do rong groupBox.
-        width = self.groupBox_2.width()
-        stats_label_x = max(560, width - 430)
-        stats_value_x = stats_label_x + 170
-        stats_width = max(width - stats_value_x - 35, 160)
-
-        self.label_14.move(stats_label_x, 145)
-        self.label_16.move(stats_label_x, 185)
-        self.label_17.move(stats_label_x, 225)
-        self.lineEdit_tongcalo.setGeometry(stats_value_x, 145, stats_width, 31)
-        self.lineEdit_TDEE.setGeometry(stats_value_x, 185, stats_width, 31)
-        self.lineEdit_trangthai.setGeometry(stats_value_x, 225, stats_width, 31)
-
-        note_width = max(stats_label_x - 110, 380)
-        self.lineEdit_ghichu.setGeometry(90, 190, note_width, 31)
 
     def retranslateUi(self, Dialog):
         _translate = QtCore.QCoreApplication.translate
