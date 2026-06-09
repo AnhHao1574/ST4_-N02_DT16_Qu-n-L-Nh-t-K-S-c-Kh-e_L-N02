@@ -19,15 +19,15 @@
 
 # Chức năng đăng nhập 
 
-<img width="2041" height="952" alt="dangnhap" src="https://github.com/user-attachments/assets/ea1060bf-dfc5-410f-901c-32ca9b43760c" />
+<img width="2541" height="952" alt="dangnhap" src="https://github.com/user-attachments/assets/ea1060bf-dfc5-410f-901c-32ca9b43760c" />
 
 # Chức năng đăng ký 
 
-<img width="2040" height="952" alt="dangky" src="https://github.com/user-attachments/assets/ae9fe5a5-6eba-45bb-9555-2b7dcfc3c080" />
+<img width="2540" height="952" alt="dangky" src="https://github.com/user-attachments/assets/ae9fe5a5-6eba-45bb-9555-2b7dcfc3c080" />
 
 # Tổng quan giao diện 
 
-<img width="2040" height="952" alt="tongquan" src="https://github.com/user-attachments/assets/05742935-5692-4f0f-8c40-099e89f86a6e" />
+<img width="2540" height="952" alt="tongquan" src="https://github.com/user-attachments/assets/05742935-5692-4f0f-8c40-099e89f86a6e" />
 
 
 
